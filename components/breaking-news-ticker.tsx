@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { ChevronRight } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
+import { ChevronRight } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export function BreakingNewsTicker() {
-  const [activeIndex, setActiveIndex] = useState(0)
+  const [activeIndex, setActiveIndex] = useState(0);
 
   // Mock breaking news items
   const breakingNews = [
@@ -24,15 +24,15 @@ export function BreakingNewsTicker() {
       title: "Ancient religious manuscript restored after centuries",
       link: "/posts/ancient-manuscript-restored",
     },
-  ]
+  ];
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveIndex((current) => (current + 1) % breakingNews.length)
-    }, 5000)
+      setActiveIndex((current) => (current + 1) % breakingNews.length);
+    }, 5000);
 
-    return () => clearInterval(interval)
-  }, [breakingNews.length])
+    return () => clearInterval(interval);
+  }, [breakingNews.length]);
 
   return (
     <div className="bg-primary text-primary-foreground py-2 px-4 mb-6 rounded-md flex items-center overflow-hidden">
@@ -44,7 +44,7 @@ export function BreakingNewsTicker() {
             href={item.link}
             className={cn(
               "absolute inset-0 flex items-center transition-transform duration-500 ease-in-out",
-              index === activeIndex ? "translate-x-0" : "translate-x-full",
+              index === activeIndex ? "translate-x-0" : "translate-x-full"
             )}
           >
             <ChevronRight className="mr-2 h-4 w-4" />
@@ -53,5 +53,5 @@ export function BreakingNewsTicker() {
         ))}
       </div>
     </div>
-  )
+  );
 }

@@ -2,14 +2,17 @@ import { MainNav } from "@/components/main-nav";
 import { MobileNav } from "@/components/mobile-nav";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
+import { getAllCategories } from "@/lib/server/categories-server";
 import { Search } from "lucide-react";
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const categories = await getAllCategories();
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center mx-auto px-4">
-        <MainNav />
-        <MobileNav />
+      <div className="container flex h-16 items-center px-2 md:px-4 mx-auto">
+        <MainNav categories={categories} />
+        <MobileNav categories={categories} />
         <div className="flex flex-1 items-center justify-end space-x-4">
           <div className="w-full flex-1 md:w-auto md:flex-none">
             <Button

@@ -2,73 +2,22 @@
 
 import { MegaMenu } from "@/components/mega-menu";
 import { Button } from "@/components/ui/button";
+import type { CategoryData } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
 
-export function MainNav() {
+interface MainNavProps {
+  categories: CategoryData[];
+}
+
+export function MainNav({ categories }: MainNavProps) {
   const pathname = usePathname();
   const [activeCategory, setActiveCategory] = React.useState<string | null>(
     null
   );
-
-  const categories = [
-    {
-      name: "Testimonials",
-      slug: "testimonials",
-      subcategories: [
-        { name: "Personal Encounters", slug: "personal-encounters" },
-        { name: "Conversion Stories", slug: "conversion-stories" },
-        { name: "Miracle Accounts", slug: "miracle-accounts" },
-      ],
-    },
-    {
-      name: "Spiritual Guidance",
-      slug: "spiritual-guidance",
-      subcategories: [
-        { name: "Prayer Practices", slug: "prayer-practices" },
-        { name: "Meditation Techniques", slug: "meditation-techniques" },
-        { name: "Scripture Study", slug: "scripture-study" },
-      ],
-    },
-    {
-      name: "Faith Traditions",
-      slug: "faith-traditions",
-      subcategories: [
-        { name: "Christianity", slug: "christianity" },
-        { name: "Islam", slug: "islam" },
-      ],
-    },
-    {
-      name: "Sacred Places",
-      slug: "sacred-places",
-      subcategories: [
-        { name: "Pilgrimage Sites", slug: "pilgrimage-sites" },
-        { name: "Holy Lands", slug: "holy-lands" },
-        { name: "Sacred Architecture", slug: "sacred-architecture" },
-      ],
-    },
-    {
-      name: "Community",
-      slug: "community",
-      subcategories: [
-        { name: "Events Calendar", slug: "events-calendar" },
-        { name: "Interfaith Dialogue", slug: "interfaith-dialogue" },
-        { name: "Service Opportunities", slug: "service-opportunities" },
-      ],
-    },
-    {
-      name: "Resources",
-      slug: "resources",
-      subcategories: [
-        { name: "Book Reviews", slug: "book-reviews" },
-        { name: "Podcasts & Media", slug: "podcasts-media" },
-        { name: "Study Guides", slug: "study-guides" },
-      ],
-    },
-  ];
 
   return (
     <div className="mr-4 hidden md:flex">
@@ -77,7 +26,7 @@ export function MainNav() {
           Divine Encounters
         </span>
       </Link>
-      <nav className="flex flex-wrap items-center space-x-6 text-sm font-medium">
+      <nav className="flex items-center space-x-6 text-sm font-medium">
         {categories.map((category) => (
           <div
             key={category.slug}
@@ -104,12 +53,12 @@ export function MainNav() {
             )}
           </div>
         ))}
-        <Button variant="ghost" className="px-2" asChild>
+        {/* <Button variant="ghost" className="px-2" asChild>
           <Link href="/about">About</Link>
         </Button>
         <Button variant="ghost" className="px-2" asChild>
           <Link href="/contact">Contact</Link>
-        </Button>
+        </Button> */}
       </nav>
     </div>
   );

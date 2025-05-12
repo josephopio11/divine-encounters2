@@ -48,6 +48,7 @@ This practice bears similarities to mantra meditation in Eastern traditions, sug
 Developed in the 1970s by Trappist monks, particularly Thomas Keating, Centering Prayer draws on the contemplative traditions of Christian mysticism, especially The Cloud of Unknowing, a 14th-century anonymous work. While relatively recent in its current form, it has deep historical roots.
 
 The method is simple:
+
 1. Choose a sacred word as a symbol of your intention to consent to God's presence and action.
 2. Sitting comfortably with eyes closed, settle briefly and silently introduce the sacred word.
 3. When you become aware of thoughts, return ever-so-gently to the sacred word.
@@ -60,10 +61,12 @@ Unlike some forms of meditation that focus on emptying the mind, Centering Praye
 The practice of connecting prayer with breath appears across many traditions, from the Hindu pranayama to the hesychast practices of Eastern Orthodoxy. The fundamental insight is that breath—the most basic rhythm of life—can become a vehicle for prayer.
 
 A simple form of breath prayer involves choosing a short phrase that can be divided between inhalation and exhalation. For example:
+
 - Inhale: "Lord Jesus Christ"
 - Exhale: "have mercy on me"
 
 Or:
+
 - Inhale: "Be still and know"
 - Exhale: "that I am God"
 

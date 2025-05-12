@@ -1,17 +1,17 @@
-import type { MetadataRoute } from "next"
-import { getAllPosts } from "@/lib/posts"
+import { getAllPosts } from "@/lib/posts";
+import type { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://divineencounters.org"
+  const baseUrl = "https://divineencounters.org";
 
   // Get all posts
-  const posts = await getAllPosts()
+  const posts = await getAllPosts();
   const postEntries = posts.map((post) => ({
     url: `${baseUrl}/posts/${post.slug}`,
     lastModified: new Date(post.date),
     changeFrequency: "monthly" as const,
     priority: 0.8,
-  }))
+  }));
 
   // Static pages
   const staticPages = [
@@ -57,7 +57,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "yearly" as const,
       priority: 0.4,
     },
-  ]
+  ];
 
   // Category pages
   const categories = [
@@ -67,14 +67,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "sacred-places",
     "community",
     "resources",
-  ]
+  ];
 
   const categoryEntries = categories.map((category) => ({
     url: `${baseUrl}/category/${category}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.6,
-  }))
+  }));
 
-  return [...staticPages, ...categoryEntries, ...postEntries]
+  return [...staticPages, ...categoryEntries, ...postEntries];
 }

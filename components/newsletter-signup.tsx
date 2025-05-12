@@ -27,7 +27,7 @@ export function NewsletterSignup() {
 
   return (
     <section className="border-t bg-muted/50">
-      <div className="container px-4 py-12 md:px-6">
+      <div className="container px-4 py-12 md:px-6 mx-auto">
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <div className="space-y-2">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">

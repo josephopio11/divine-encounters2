@@ -1,9 +1,12 @@
+import { getAllCategories } from "@/lib/server/categories-server";
 import Link from "next/link";
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const categories = await getAllCategories();
+
   return (
     <footer className="border-t bg-background">
-      <div className="container px-4 py-12 md:px-6 mx-auto">
+      <div className="container px-4 py-12 md:px-6">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Divine Encounters</h3>
@@ -15,45 +18,16 @@ export function SiteFooter() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Categories</h3>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/category/testimonials" className="hover:underline">
-                  Testimonials
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/category/spiritual-guidance"
-                  className="hover:underline"
-                >
-                  Spiritual Guidance
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/category/faith-traditions"
-                  className="hover:underline"
-                >
-                  Faith Traditions
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/category/sacred-places"
-                  className="hover:underline"
-                >
-                  Sacred Places
-                </Link>
-              </li>
-              <li>
-                <Link href="/category/community" className="hover:underline">
-                  Community
-                </Link>
-              </li>
-              <li>
-                <Link href="/category/resources" className="hover:underline">
-                  Resources
-                </Link>
-              </li>
+              {categories.map((category) => (
+                <li key={category.slug}>
+                  <Link
+                    href={`/category/${category.slug}`}
+                    className="hover:underline"
+                  >
+                    {category.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
           <div className="space-y-4">

@@ -1,28 +1,34 @@
-import Link from "next/link"
-import Image from "next/image"
-import { formatDate } from "@/lib/utils"
-import { Card, CardContent } from "@/components/ui/card"
-import type { Post } from "@/lib/types"
+import { Card, CardContent } from "@/components/ui/card";
+import type { Post } from "@/lib/types";
+import { formatDate } from "@/lib/utils";
+import Image from "next/image";
+import Link from "next/link";
 
 interface CategoryHighlightsProps {
-  category: string
-  posts: Post[]
+  category: string;
+  posts: Post[];
 }
 
-export function CategoryHighlights({ category, posts }: CategoryHighlightsProps) {
-  if (posts.length === 0) return null
+export function CategoryHighlights({
+  category,
+  posts,
+}: CategoryHighlightsProps) {
+  if (!posts || posts.length === 0) return null;
 
   // Format category name for display
   const displayName = category
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ")
+    .join(" ");
 
   return (
     <section className="py-8">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-3xl font-bold tracking-tight">{displayName}</h2>
-        <Link href={`/category/${category}`} className="text-sm font-medium text-primary hover:underline">
+        <Link
+          href={`/category/${category}`}
+          className="text-sm font-medium text-primary hover:underline"
+        >
           View All
         </Link>
       </div>
@@ -32,21 +38,30 @@ export function CategoryHighlights({ category, posts }: CategoryHighlightsProps)
             <Link href={`/posts/${post.slug}`} className="group">
               <div className="relative aspect-[16/9] overflow-hidden">
                 <Image
-                  src={post.featuredImage || "/placeholder.svg?height=300&width=500"}
+                  src={
+                    post.featuredImage ||
+                    "/placeholder.svg?height=300&width=500"
+                  }
                   alt={post.title}
                   fill
                   className="object-cover transition-all group-hover:scale-105"
                 />
               </div>
               <CardContent className="p-4">
-                <h3 className="mb-2 line-clamp-2 text-lg font-bold">{post.title}</h3>
-                <p className="mb-2 line-clamp-2 text-sm text-muted-foreground">{post.excerpt}</p>
-                <p className="text-xs text-muted-foreground">{formatDate(post.date)}</p>
+                <h3 className="mb-2 line-clamp-2 text-lg font-bold">
+                  {post.title}
+                </h3>
+                <p className="mb-2 line-clamp-2 text-sm text-muted-foreground">
+                  {post.excerpt}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {formatDate(post.date)}
+                </p>
               </CardContent>
             </Link>
           </Card>
         ))}
       </div>
     </section>
-  )
+  );
 }

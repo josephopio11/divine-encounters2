@@ -1,87 +1,138 @@
-import type { Metadata } from "next"
-import Link from "next/link"
-import Image from "next/image"
-import { getPostsByCategory } from "@/lib/posts"
-import { formatDate } from "@/lib/utils"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { getCategoryBySlug } from "@/lib/server/categories-server";
+import { getPostsByCategory } from "@/lib/server/posts-server";
+import { formatDate } from "@/lib/utils";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
 interface CategoryPageProps {
   params: {
-    category: string
-  }
+    category: string;
+  };
   searchParams: {
-    page?: string
-  }
+    page?: string;
+  };
 }
 
-export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
-  const category = params.category
-  const displayName = category
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ")
+export async function generateMetadata({
+  params,
+}: CategoryPageProps): Promise<Metadata> {
+  const category = await getCategoryBySlug(params.category);
+
+  if (!category) {
+    return {
+      title: "Category Not Found",
+    };
+  }
 
   return {
-    title: displayName,
-    description: `Explore articles in the ${displayName} category on Divine Encounters.`,
-  }
+    title: category.name,
+    description: category.description,
+  };
 }
 
-export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
-  const category = params.category
-  const currentPage = Number(searchParams.page) || 1
-  const postsPerPage = 12
+export default async function CategoryPage({
+  params,
+  searchParams,
+}: CategoryPageProps) {
+  const category = await getCategoryBySlug(params.category);
 
-  const posts = await getPostsByCategory(category)
-  const totalPages = Math.ceil(posts.length / postsPerPage)
+  if (!category) {
+    notFound();
+  }
 
-  const displayName = category
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ")
+  const currentPage = Number(searchParams.page) || 1;
+  const postsPerPage = 12;
 
-  const paginatedPosts = posts.slice((currentPage - 1) * postsPerPage, currentPage * postsPerPage)
+  const posts = await getPostsByCategory(params.category);
+  const totalPages = Math.ceil(posts.length / postsPerPage);
+
+  const paginatedPosts = posts.slice(
+    (currentPage - 1) * postsPerPage,
+    currentPage * postsPerPage
+  );
 
   return (
     <main className="container mx-auto px-4 py-12">
       <div className="mb-8 space-y-4">
-        <h1 className="text-4xl font-bold tracking-tight">{displayName}</h1>
-        <p className="text-xl text-muted-foreground">
-          Explore our collection of articles about {displayName.toLowerCase()}.
-        </p>
+        <h1 className="text-4xl font-bold tracking-tight">{category.name}</h1>
+        <p className="text-xl text-muted-foreground">{category.description}</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {paginatedPosts.map((post) => (
-          <Card key={post.slug} className="overflow-hidden">
-            <Link href={`/posts/${post.slug}`} className="group">
-              <div className="relative aspect-[16/9] overflow-hidden">
-                <Image
-                  src={post.featuredImage || "/placeholder.svg?height=300&width=500"}
-                  alt={post.title}
-                  fill
-                  className="object-cover transition-all group-hover:scale-105"
-                />
-              </div>
-              <CardContent className="p-4">
-                <Badge className="mb-2">{post.category}</Badge>
-                <h2 className="mb-2 line-clamp-2 text-xl font-bold">{post.title}</h2>
-                <p className="mb-2 line-clamp-2 text-sm text-muted-foreground">{post.excerpt}</p>
-                <p className="text-xs text-muted-foreground">{formatDate(post.date)}</p>
-              </CardContent>
-            </Link>
-          </Card>
-        ))}
-      </div>
+      {category.subcategories.length > 0 && (
+        <div className="mb-8">
+          <h2 className="mb-4 text-2xl font-semibold">Subcategories</h2>
+          <div className="flex flex-wrap gap-2">
+            {category.subcategories.map((subcategory) => (
+              <Button key={subcategory.slug} variant="outline" asChild>
+                <Link href={`/category/${category.slug}/${subcategory.slug}`}>
+                  {subcategory.name}
+                </Link>
+              </Button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {paginatedPosts.length > 0 ? (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {paginatedPosts.map((post) => (
+            <Card key={post.slug} className="overflow-hidden">
+              <Link href={`/posts/${post.slug}`} className="group">
+                <div className="relative aspect-[16/9] overflow-hidden">
+                  <Image
+                    src={
+                      post.featuredImage ||
+                      "/placeholder.svg?height=300&width=500"
+                    }
+                    alt={post.title}
+                    fill
+                    className="object-cover transition-all group-hover:scale-105"
+                  />
+                </div>
+                <CardContent className="p-4">
+                  <Badge className="mb-2">{post.category}</Badge>
+                  <h2 className="mb-2 line-clamp-2 text-xl font-bold">
+                    {post.title}
+                  </h2>
+                  <p className="mb-2 line-clamp-2 text-sm text-muted-foreground">
+                    {post.excerpt}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {formatDate(post.date)}
+                  </p>
+                </CardContent>
+              </Link>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="my-12 text-center">
+          <p className="text-lg text-muted-foreground">
+            No posts found in this category yet.
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Add markdown files to the /{category.slug} directory to see them
+            displayed here.
+          </p>
+        </div>
+      )}
 
       {totalPages > 1 && (
         <div className="mt-12 flex items-center justify-center space-x-2">
-          <Button variant="outline" size="icon" disabled={currentPage <= 1} asChild={currentPage > 1}>
+          <Button
+            variant="outline"
+            size="icon"
+            disabled={currentPage <= 1}
+            asChild={currentPage > 1}
+          >
             {currentPage > 1 ? (
-              <Link href={`/category/${category}?page=${currentPage - 1}`}>
+              <Link href={`/category/${category.slug}?page=${currentPage - 1}`}>
                 <ChevronLeft className="h-4 w-4" />
                 <span className="sr-only">Previous page</span>
               </Link>
@@ -95,9 +146,14 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           <span className="text-sm">
             Page {currentPage} of {totalPages}
           </span>
-          <Button variant="outline" size="icon" disabled={currentPage >= totalPages} asChild={currentPage < totalPages}>
+          <Button
+            variant="outline"
+            size="icon"
+            disabled={currentPage >= totalPages}
+            asChild={currentPage < totalPages}
+          >
             {currentPage < totalPages ? (
-              <Link href={`/category/${category}?page=${currentPage + 1}`}>
+              <Link href={`/category/${category.slug}?page=${currentPage + 1}`}>
                 <ChevronRight className="h-4 w-4" />
                 <span className="sr-only">Next page</span>
               </Link>
@@ -111,5 +167,5 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         </div>
       )}
     </main>
-  )
+  );
 }

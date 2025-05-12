@@ -1,32 +1,34 @@
-import type { Metadata } from "next"
-import Link from "next/link"
-import Image from "next/image"
-import { notFound } from "next/navigation"
-import { getPostBySlug, getAllPosts } from "@/lib/posts"
-import { formatDate, getReadingTime } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { ChevronLeft, ChevronRight, Clock, Calendar, Tag } from "lucide-react"
-import { SocialShare } from "@/components/social-share"
-import { RelatedPosts } from "@/components/related-posts"
-import { CommentSection } from "@/components/comment-section"
+import { CommentSection } from "@/components/comment-section";
+import { RelatedPosts } from "@/components/related-posts";
+import { SocialShare } from "@/components/social-share";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { getAllPosts, getPostBySlug } from "@/lib/server/posts-server";
+import { formatDate, getReadingTime } from "@/lib/utils";
+import { Calendar, ChevronLeft, ChevronRight, Clock, Tag } from "lucide-react";
+import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
 interface PostPageProps {
   params: {
-    slug: string
-  }
+    slug: string;
+  };
   searchParams: {
-    page?: string
-  }
+    page?: string;
+  };
 }
 
-export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
-  const post = await getPostBySlug(params.slug)
+export async function generateMetadata({
+  params,
+}: PostPageProps): Promise<Metadata> {
+  const post = await getPostBySlug(params.slug);
 
   if (!post) {
     return {
       title: "Post Not Found",
-    }
+    };
   }
 
   return {
@@ -54,39 +56,51 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
       description: post.excerpt || "",
       images: [post.featuredImage || "/og-image.jpg"],
     },
-  }
+  };
 }
 
-export default async function PostPage({ params, searchParams }: PostPageProps) {
-  const post = await getPostBySlug(params.slug)
+export default async function PostPage({
+  params,
+  searchParams,
+}: PostPageProps) {
+  const post = await getPostBySlug(params.slug);
 
   if (!post) {
-    notFound()
+    notFound();
   }
 
-  const currentPage = Number(searchParams.page) || 1
-  const sections = post.sections || []
-  const totalPages = sections.length || 1
+  const currentPage = Number(searchParams.page) || 1;
+  const sections = post.sections || [];
+  const totalPages = sections.length || 1;
 
   // Get current section based on page parameter
-  const currentSection = sections[currentPage - 1] || { heading: "", content: post.content }
+  const currentSection = sections[currentPage - 1] || {
+    heading: "",
+    content: post.content,
+  };
 
   // Get all posts for related posts
-  const allPosts = await getAllPosts()
+  const allPosts = await getAllPosts();
   const relatedPosts = allPosts
     .filter(
       (p) =>
         p.slug !== post.slug &&
-        (p.category === post.category || p.keywords.some((keyword) => post.keywords.includes(keyword))),
+        (p.category === post.category ||
+          p.keywords.some((keyword) => post.keywords.includes(keyword)))
     )
-    .slice(0, 3)
+    .slice(0, 3);
 
   return (
     <main className="container mx-auto px-4 py-12">
       <article className="mx-auto max-w-4xl">
         <div className="mb-8 space-y-4">
           <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-            <Link href={`/category/${post.category.toLowerCase().replace(/\s+/g, "-")}`} className="hover:underline">
+            <Link
+              href={`/category/${post.category
+                .toLowerCase()
+                .replace(/\s+/g, "-")}`}
+              className="hover:underline"
+            >
               {post.category}
             </Link>
             {currentPage > 1 && (
@@ -99,7 +113,9 @@ export default async function PostPage({ params, searchParams }: PostPageProps) 
 
           {currentPage === 1 && (
             <>
-              <h1 className="text-4xl font-bold tracking-tight md:text-5xl">{post.title}</h1>
+              <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
+                {post.title}
+              </h1>
               <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center">
                   <Calendar className="mr-1 h-4 w-4" />
@@ -116,7 +132,10 @@ export default async function PostPage({ params, searchParams }: PostPageProps) 
               </div>
               <div className="relative aspect-[21/9] overflow-hidden rounded-lg">
                 <Image
-                  src={post.featuredImage || "/placeholder.svg?height=600&width=1200"}
+                  src={
+                    post.featuredImage ||
+                    "/placeholder.svg?height=600&width=1200"
+                  }
                   alt={post.title}
                   fill
                   className="object-cover"
@@ -126,7 +145,11 @@ export default async function PostPage({ params, searchParams }: PostPageProps) 
             </>
           )}
 
-          {currentPage > 1 && <h2 className="text-3xl font-bold tracking-tight">{currentSection.heading}</h2>}
+          {currentPage > 1 && (
+            <h2 className="text-3xl font-bold tracking-tight">
+              {currentSection.heading}
+            </h2>
+          )}
         </div>
 
         <div className="prose prose-lg max-w-none dark:prose-invert">
@@ -141,9 +164,17 @@ export default async function PostPage({ params, searchParams }: PostPageProps) 
 
         {totalPages > 1 && (
           <div className="mt-12 flex items-center justify-between">
-            <Button variant="outline" disabled={currentPage <= 1} asChild={currentPage > 1}>
+            <Button
+              variant="outline"
+              disabled={currentPage <= 1}
+              asChild={currentPage > 1}
+            >
               {currentPage > 1 ? (
-                <Link href={`/posts/${post.slug}${currentPage > 2 ? `?page=${currentPage - 1}` : ""}`}>
+                <Link
+                  href={`/posts/${post.slug}${
+                    currentPage > 2 ? `?page=${currentPage - 1}` : ""
+                  }`}
+                >
                   <ChevronLeft className="mr-2 h-4 w-4" />
                   Previous
                 </Link>
@@ -159,7 +190,11 @@ export default async function PostPage({ params, searchParams }: PostPageProps) 
               Page {currentPage} of {totalPages}
             </span>
 
-            <Button variant="outline" disabled={currentPage >= totalPages} asChild={currentPage < totalPages}>
+            <Button
+              variant="outline"
+              disabled={currentPage >= totalPages}
+              asChild={currentPage < totalPages}
+            >
               {currentPage < totalPages ? (
                 <Link href={`/posts/${post.slug}?page=${currentPage + 1}`}>
                   Next
@@ -182,5 +217,5 @@ export default async function PostPage({ params, searchParams }: PostPageProps) 
 
       <CommentSection postSlug={post.slug} />
     </main>
-  )
+  );
 }

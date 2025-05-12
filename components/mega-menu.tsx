@@ -1,34 +1,33 @@
-import Link from "next/link"
-import Image from "next/image"
-import { Card, CardContent } from "@/components/ui/card"
+"use client";
+
+import { Card, CardContent } from "@/components/ui/card";
+import type { CategoryData } from "@/lib/types";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 
 interface MegaMenuProps {
-  category: {
-    name: string
-    slug: string
-    subcategories: {
-      name: string
-      slug: string
-    }[]
-  }
+  category: CategoryData;
 }
 
 export function MegaMenu({ category }: MegaMenuProps) {
-  // Mock featured posts for each category
-  const featuredPosts = [
+  // Use client-side state for featured posts
+  const [featuredPosts, setFeaturedPosts] = useState([
     {
       title: `Featured in ${category.name}: Article Title 1`,
       slug: "article-slug-1",
       featuredImage: "/placeholder.svg?height=200&width=300",
-      excerpt: "A brief excerpt from this featured article that gives readers a taste of the content.",
+      excerpt:
+        "A brief excerpt from this featured article that gives readers a taste of the content.",
     },
     {
       title: `Featured in ${category.name}: Article Title 2`,
       slug: "article-slug-2",
       featuredImage: "/placeholder.svg?height=200&width=300",
-      excerpt: "Another brief excerpt from this featured article that gives readers a taste of the content.",
+      excerpt:
+        "Another brief excerpt from this featured article that gives readers a taste of the content.",
     },
-  ]
+  ]);
 
   return (
     <div className="absolute left-0 top-full z-50 mt-1 w-screen max-w-screen-xl">
@@ -39,14 +38,20 @@ export function MegaMenu({ category }: MegaMenuProps) {
             <ul className="space-y-2">
               {category.subcategories.map((subcategory) => (
                 <li key={subcategory.slug}>
-                  <Link href={`/category/${category.slug}/${subcategory.slug}`} className="text-sm hover:underline">
+                  <Link
+                    href={`/category/${category.slug}/${subcategory.slug}`}
+                    className="text-sm hover:underline"
+                  >
                     {subcategory.name}
                   </Link>
                 </li>
               ))}
             </ul>
             <div className="mt-4">
-              <Link href={`/category/${category.slug}`} className="text-sm font-medium text-primary hover:underline">
+              <Link
+                href={`/category/${category.slug}`}
+                className="text-sm font-medium text-primary hover:underline"
+              >
                 View All {category.name}
               </Link>
             </div>
@@ -66,7 +71,9 @@ export function MegaMenu({ category }: MegaMenuProps) {
                   </div>
                 </Link>
                 <Link href={`/posts/${post.slug}`}>
-                  <h4 className="font-semibold hover:underline">{post.title}</h4>
+                  <h4 className="font-semibold hover:underline">
+                    {post.title}
+                  </h4>
                 </Link>
                 <p className="text-sm text-muted-foreground">{post.excerpt}</p>
               </div>
@@ -75,5 +82,5 @@ export function MegaMenu({ category }: MegaMenuProps) {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
