@@ -15,89 +15,47 @@ export async function getAllPosts(): Promise<Post[]> {
       return getMockPosts();
     }
 
-    // Get all category directories
-    const categoryDirs = fs
-      .readdirSync(postsDirectory, { withFileTypes: true })
-      .filter((dirent) => dirent.isDirectory())
-      .map((dirent) => dirent.name);
-
     const allPosts: Post[] = [];
 
-    // Process each category directory
-    for (const category of categoryDirs) {
-      const categoryPath = path.join(postsDirectory, category);
-
+    // Recursive function to find all markdown files in a directory and its subdirectories
+    const findMarkdownFiles = (dir: string) => {
       try {
-        // Get all files in the category directory
-        const dirContents = fs.readdirSync(categoryPath, {
-          withFileTypes: true,
-        });
+        const items = fs.readdirSync(dir, { withFileTypes: true });
 
-        // Process markdown files directly in the category folder
-        const postFiles = dirContents
-          .filter(
-            (dirent) =>
-              dirent.isFile() &&
-              (dirent.name.endsWith(".md") || dirent.name.endsWith(".mdx"))
-          )
-          .map((dirent) => dirent.name);
+        // Process files in this directory
+        const markdownFiles = items.filter(
+          (item) =>
+            item.isFile() &&
+            (item.name.endsWith(".md") || item.name.endsWith(".mdx"))
+        );
 
-        // Process each post file
-        for (const filename of postFiles) {
+        for (const file of markdownFiles) {
           try {
-            const filePath = path.join(categoryPath, filename);
-            const post = await parseMarkdownFile(filePath);
+            const filePath = path.join(dir, file.name);
+            const post = parseMarkdownFile(filePath);
             allPosts.push(post);
           } catch (error) {
-            console.error(`Error processing post file ${filename}:`, error);
-            // Continue with next file rather than failing the entire function
+            console.error(
+              `Error processing markdown file ${file.name} in ${dir}:`,
+              error
+            );
           }
         }
 
-        // Process subcategory directories
-        const subcategoryDirs = dirContents
-          .filter((dirent) => dirent.isDirectory())
-          .map((dirent) => dirent.name);
-
-        // Process each subcategory directory
-        for (const subcategory of subcategoryDirs) {
-          const subcategoryPath = path.join(categoryPath, subcategory);
-
-          try {
-            // Get all files in the subcategory directory
-            const subcategoryFiles = fs
-              .readdirSync(subcategoryPath, { withFileTypes: true })
-              .filter(
-                (dirent) =>
-                  dirent.isFile() &&
-                  (dirent.name.endsWith(".md") || dirent.name.endsWith(".mdx"))
-              )
-              .map((dirent) => dirent.name);
-
-            // Process each post file in the subcategory
-            for (const filename of subcategoryFiles) {
-              try {
-                const filePath = path.join(subcategoryPath, filename);
-                const post = await parseMarkdownFile(filePath);
-                allPosts.push(post);
-              } catch (error) {
-                console.error(
-                  `Error processing post file ${filename} in subcategory ${subcategory}:`,
-                  error
-                );
-                // Continue with next file rather than failing
-              }
-            }
-          } catch (error) {
-            console.error(`Error reading subcategory ${subcategory}:`, error);
-            // Continue with next subcategory rather than failing
-          }
+        // Process subdirectories
+        const directories = items.filter((item) => item.isDirectory());
+        for (const subdir of directories) {
+          findMarkdownFiles(path.join(dir, subdir.name));
         }
       } catch (error) {
-        console.error(`Error reading category ${category}:`, error);
-        // Continue with next category rather than failing
+        console.error(`Error reading directory ${dir}:`, error);
       }
-    }
+    };
+
+    // Start the recursive search from the posts directory
+    findMarkdownFiles(postsDirectory);
+
+    console.log(`Found ${allPosts.length} posts in total`);
 
     // Sort posts by date (newest first)
     return allPosts.sort(
@@ -112,7 +70,7 @@ export async function getAllPosts(): Promise<Post[]> {
 export async function getFeaturedPosts(): Promise<Post[]> {
   const allPosts = await getAllPosts();
   // Select the 5 most recent posts as featured, or fewer if there aren't 5 posts
-  return allPosts.slice(0, Math.min(5, allPosts.length));
+  return allPosts.slice(0, Math.min(6, allPosts.length));
 }
 
 export async function getPostsByCategory(category: string): Promise<Post[]> {
@@ -123,58 +81,126 @@ export async function getPostsByCategory(category: string): Promise<Post[]> {
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
-  const allPosts = await getAllPosts();
-  return allPosts.find((post) => post.slug === slug) || null;
+  try {
+    // First try to find the post in the already processed posts
+    const allPosts = await getAllPosts();
+    const post = allPosts.find((post) => post.slug === slug);
+
+    if (post) {
+      return post;
+    }
+
+    // If not found, try to find the file directly (this is a fallback)
+    // This is a more intensive search that looks for the specific file
+    const findFileBySlug = (dir: string): string | null => {
+      try {
+        const items = fs.readdirSync(dir, { withFileTypes: true });
+
+        // Check files in this directory
+        for (const item of items) {
+          if (
+            item.isFile() &&
+            (item.name.endsWith(".md") || item.name.endsWith(".mdx")) &&
+            path.basename(item.name, path.extname(item.name)) === slug
+          ) {
+            return path.join(dir, item.name);
+          }
+        }
+
+        // Check subdirectories
+        for (const item of items) {
+          if (item.isDirectory()) {
+            const found = findFileBySlug(path.join(dir, item.name));
+            if (found) return found;
+          }
+        }
+
+        return null;
+      } catch (error) {
+        console.error(`Error searching for file by slug in ${dir}:`, error);
+        return null;
+      }
+    };
+
+    const filePath = findFileBySlug(postsDirectory);
+    if (filePath) {
+      return parseMarkdownFile(filePath);
+    }
+
+    return null;
+  } catch (error) {
+    console.error(`Error getting post by slug ${slug}:`, error);
+    return null;
+  }
 }
 
 // Parse markdown file and extract frontmatter and content
-export async function parseMarkdownFile(filePath: string): Promise<Post> {
-  const fileContents = fs.readFileSync(filePath, "utf8");
-  const { data, content } = matter(fileContents);
+function parseMarkdownFile(filePath: string): Post {
+  try {
+    const fileContents = fs.readFileSync(filePath, "utf8");
+    const { data, content } = matter(fileContents);
 
-  // Process markdown content to HTML
-  const processedContent = await remark().use(html).process(content);
-  const htmlContent = processedContent.toString();
+    // Process markdown content to HTML
+    const processedContent = remark().use(html).processSync(content);
+    const htmlContent = processedContent.toString();
 
-  // Extract sections based on H2 headings
-  const sections = [];
-  const headingRegex = /## (.*?)\n([\s\S]*?)(?=## |$)/g;
-  let match;
+    // Extract sections based on H2 headings
+    const sections = [];
+    const headingRegex = /## (.*?)\n([\s\S]*?)(?=## |$)/g;
+    let match;
 
-  while ((match = headingRegex.exec(content)) !== null) {
-    sections.push({
-      heading: match[1].trim(),
-      content: match[2].trim(),
-    });
+    while ((match = headingRegex.exec(content)) !== null) {
+      // Process the section content to HTML as well
+      const sectionContentHtml = remark()
+        .use(html)
+        .processSync(match[2].trim())
+        .toString();
+
+      sections.push({
+        heading: match[1].trim(),
+        content: sectionContentHtml,
+      });
+    }
+
+    // Create excerpt from content if not provided in frontmatter
+    const excerpt =
+      data.excerpt || content.replace(/^#.*\n/, "").substring(0, 200) + "...";
+
+    // Get category from the folder structure or frontmatter
+    const categoryFromFrontmatter = data.category;
+
+    // If no category in frontmatter, derive from folder structure
+    let categoryFromPath = "";
+    if (!categoryFromFrontmatter) {
+      const relativePath = path.relative(postsDirectory, filePath);
+      const pathParts = relativePath.split(path.sep);
+      if (pathParts.length > 0) {
+        categoryFromPath = pathParts[0]
+          .split("-")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ");
+      }
+    }
+
+    // Get the slug from the filename
+    const slug = path.basename(filePath, path.extname(filePath));
+
+    return {
+      title: data.title || "Untitled Post",
+      slug: slug,
+      date: data.date || new Date().toISOString(),
+      category: categoryFromFrontmatter || categoryFromPath || "Uncategorized",
+      featuredImage:
+        data.featuredImage || "/placeholder.svg?height=600&width=800",
+      excerpt: excerpt,
+      content: htmlContent,
+      keywords: data.keywords || [],
+      sections,
+    };
+  } catch (error) {
+    console.error(`Error parsing markdown file ${filePath}:`, error);
+    throw error;
   }
-
-  // Create excerpt from content if not provided in frontmatter
-  const excerpt =
-    data.excerpt || content.replace(/^#.*\n/, "").substring(0, 200) + "...";
-
-  // Get category from the folder structure
-  const relativePath = path.relative(postsDirectory, filePath);
-  const pathParts = relativePath.split(path.sep);
-  const categoryPath = pathParts[0];
-
-  // Format category name (convert from slug to title case)
-  const categoryName = categoryPath
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-
-  return {
-    title: data.title,
-    slug: path.basename(filePath, path.extname(filePath)),
-    date: data.date,
-    category: data.category || categoryName, // Use frontmatter category or derive from folder
-    featuredImage:
-      data.featuredImage || "/placeholder.svg?height=600&width=800",
-    excerpt: excerpt,
-    content: htmlContent,
-    keywords: data.keywords || [],
-    sections,
-  };
 }
 
 // Fallback mock posts if file system operations fail
@@ -188,20 +214,20 @@ function getMockPosts(): Post[] {
       featuredImage: "/placeholder.svg?height=600&width=800",
       excerpt:
         "How a skeptic found faith through unexpected encounters and experiences.",
-      content: "Full content would go here...",
+      content: "<p>Full content would go here...</p>",
       keywords: ["faith", "testimony", "conversion", "spiritual journey"],
       sections: [
         {
           heading: "The Beginning",
-          content: "Content for section 1...",
+          content: "<p>Content for section 1...</p>",
         },
         {
           heading: "The Turning Point",
-          content: "Content for section 2...",
+          content: "<p>Content for section 2...</p>",
         },
         {
           heading: "New Perspectives",
-          content: "Content for section 3...",
+          content: "<p>Content for section 3...</p>",
         },
       ],
     },
@@ -213,7 +239,7 @@ function getMockPosts(): Post[] {
       featuredImage: "/placeholder.svg?height=600&width=800",
       excerpt:
         "Rediscovering timeless prayer techniques that can transform your spiritual life.",
-      content: "Full content would go here...",
+      content: "<p>Full content would go here...</p>",
       keywords: [
         "prayer",
         "spiritual practices",
@@ -223,15 +249,15 @@ function getMockPosts(): Post[] {
       sections: [
         {
           heading: "Historical Context",
-          content: "Content for section 1...",
+          content: "<p>Content for section 1...</p>",
         },
         {
           heading: "Key Practices",
-          content: "Content for section 2...",
+          content: "<p>Content for section 2...</p>",
         },
         {
           heading: "Modern Applications",
-          content: "Content for section 3...",
+          content: "<p>Content for section 3...</p>",
         },
       ],
     },

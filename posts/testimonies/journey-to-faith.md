@@ -1,7 +1,7 @@
 ---
 title: "My Journey to Faith: A Personal Testimony"
 date: "2023-05-15"
-category: "Testimonials"
+category: "Testimonies"
 featuredImage: "/images/journey-to-faith.jpg"
 keywords: ["faith", "testimony", "conversion", "spiritual journey"]
 ---

@@ -1,4 +1,3 @@
-import { CommentSection } from "@/components/comment-section";
 import { RelatedPosts } from "@/components/related-posts";
 import { SocialShare } from "@/components/social-share";
 import { Button } from "@/components/ui/button";
@@ -12,18 +11,19 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 interface PostPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     page?: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({
   params,
 }: PostPageProps): Promise<Metadata> {
-  const post = await getPostBySlug(params.slug);
+  const pageParams = await params;
+  const post = await getPostBySlug(pageParams.slug);
 
   if (!post) {
     return {
@@ -63,13 +63,20 @@ export default async function PostPage({
   params,
   searchParams,
 }: PostPageProps) {
-  const post = await getPostBySlug(params.slug);
+  const pageParams = await params;
+  const mySearchParams = await searchParams;
+  const post = await getPostBySlug(pageParams.slug);
 
   if (!post) {
     notFound();
   }
 
-  const currentPage = Number(searchParams.page) || 1;
+  // Add debugging to see what's in the post
+  console.log(`Rendering post: ${post.title}`);
+  console.log(`Content length: ${post.content.length} characters`);
+  console.log(`Number of sections: ${post.sections?.length || 0}`);
+
+  const currentPage = Number(mySearchParams.page) || 1;
   const sections = post.sections || [];
   const totalPages = sections.length || 1;
 
@@ -103,6 +110,10 @@ export default async function PostPage({
             >
               {post.category}
             </Link>
+            <>
+              <span>/</span>
+              <span className="text-primary">{post.title}</span>
+            </>
             {currentPage > 1 && (
               <>
                 <span>/</span>
@@ -160,8 +171,6 @@ export default async function PostPage({
           )}
         </div>
 
-        <SocialShare title={post.title} slug={post.slug} />
-
         {totalPages > 1 && (
           <div className="mt-12 flex items-center justify-between">
             <Button
@@ -209,13 +218,15 @@ export default async function PostPage({
             </Button>
           </div>
         )}
+
+        <SocialShare title={post.title} slug={post.slug} />
       </article>
 
       <Separator className="my-12" />
 
       <RelatedPosts posts={relatedPosts} />
 
-      <CommentSection postSlug={post.slug} />
+      {/* <CommentSection postSlug={post.slug} /> */}
     </main>
   );
 }

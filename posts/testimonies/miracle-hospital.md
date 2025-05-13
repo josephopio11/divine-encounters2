@@ -1,7 +1,7 @@
 ---
 title: "Miracle at the Hospital: A Doctor's Perspective"
 date: "2023-11-08"
-category: "Testimonials"
+category: "Testimonies"
 featuredImage: "/images/hospital-miracle.jpg"
 keywords: ["miracle", "healing", "medicine", "testimony"]
 ---

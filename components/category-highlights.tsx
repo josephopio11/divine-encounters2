@@ -34,7 +34,10 @@ export function CategoryHighlights({
       </div>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {posts.map((post) => (
-          <Card key={post.slug} className="overflow-hidden">
+          <Card
+            key={post.slug}
+            className="overflow-hidden mt-0 pt-0 hover:shadow-2xl hover:shadow-black/50 transition duration-300"
+          >
             <Link href={`/posts/${post.slug}`} className="group">
               <div className="relative aspect-[16/9] overflow-hidden">
                 <Image

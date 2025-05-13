@@ -11,18 +11,19 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 interface CategoryPageProps {
-  params: {
+  params: Promise<{
     category: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     page?: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({
   params,
 }: CategoryPageProps): Promise<Metadata> {
-  const category = await getCategoryBySlug(params.category);
+  const pageParams = await params;
+  const category = await getCategoryBySlug(pageParams.category);
 
   if (!category) {
     return {
@@ -40,16 +41,19 @@ export default async function CategoryPage({
   params,
   searchParams,
 }: CategoryPageProps) {
-  const category = await getCategoryBySlug(params.category);
+  const pageParams = await params;
+  const mySearchParams = await searchParams;
+
+  const category = await getCategoryBySlug(pageParams.category);
 
   if (!category) {
     notFound();
   }
 
-  const currentPage = Number(searchParams.page) || 1;
+  const currentPage = Number(mySearchParams.page) || 1;
   const postsPerPage = 12;
 
-  const posts = await getPostsByCategory(params.category);
+  const posts = await getPostsByCategory(pageParams.category);
   const totalPages = Math.ceil(posts.length / postsPerPage);
 
   const paginatedPosts = posts.slice(
@@ -82,9 +86,12 @@ export default async function CategoryPage({
       {paginatedPosts.length > 0 ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {paginatedPosts.map((post) => (
-            <Card key={post.slug} className="overflow-hidden">
-              <Link href={`/posts/${post.slug}`} className="group">
-                <div className="relative aspect-[16/9] overflow-hidden">
+            <Card
+              key={post.slug}
+              className="overflow-hidden hover:shadow-2xl hover:shadow-black/20 pt-0 mt-0 transition duration-300 ease-in-out"
+            >
+              <Link href={`/posts/${post.slug}`} className="group mt-0 pt-0">
+                <div className="relative aspect-[16/9] overflow-hidden mt-0 pt-0">
                   <Image
                     src={
                       post.featuredImage ||

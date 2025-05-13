@@ -51,6 +51,7 @@ In contemporary Muslim communities, mosques fill with worshippers for Friday pra
 Ritual purity constitutes an essential prerequisite for valid prayer in Islam. The Quran states: "O you who believe! When you prepare for prayer, wash your faces and your hands to the elbows, wipe your heads, and wash your feet to the ankles" (5:6). This ablution, known as wudu, cleanses the body symbolically and literally in preparation for standing before God.
 
 The steps of wudu include:
+
 1. Declaring intention (niyyah)
 2. Washing the hands three times
 3. Rinsing the mouth three times
@@ -74,6 +75,7 @@ The prayer space itself should be clean and free from impurities. Muslims typica
 ### The Structure of Salat
 
 Each prayer consists of a specific number of units (rak'ahs):
+
 - Fajr: 2 rak'ahs
 - Dhuhr: 4 rak'ahs
 - Asr: 4 rak'ahs
@@ -81,6 +83,7 @@ Each prayer consists of a specific number of units (rak'ahs):
 - Isha: 4 rak'ahs
 
 A single rak'ah includes the following sequence:
+
 1. **Standing (Qiyam)**: The prayer begins with the declaration "Allahu Akbar" (God is Greatest) while raising the hands to the ears or shoulders. The worshipper then recites the opening chapter of the Quran (Al-Fatiha) followed by another passage.
 
 2. **Bowing (Ruku)**: The worshipper bends at the waist, placing hands on knees, and glorifies God by saying "Subhana Rabbiyal Adheem" (Glory to my Lord, the Great).

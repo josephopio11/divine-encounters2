@@ -11,21 +11,22 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 interface SubcategoryPageProps {
-  params: {
+  params: Promise<{
     category: string;
     subcategory: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     page?: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({
   params,
 }: SubcategoryPageProps): Promise<Metadata> {
+  const pageParams = await params;
   const result = await getSubcategoryBySlug(
-    params.category,
-    params.subcategory
+    pageParams.category,
+    pageParams.subcategory
   );
 
   if (!result) {
@@ -46,9 +47,12 @@ export default async function SubcategoryPage({
   params,
   searchParams,
 }: SubcategoryPageProps) {
+  const pageParams = await params;
+  const mySearchParams = await searchParams;
+
   const result = await getSubcategoryBySlug(
-    params.category,
-    params.subcategory
+    pageParams.category,
+    pageParams.subcategory
   );
 
   if (!result) {
@@ -56,7 +60,7 @@ export default async function SubcategoryPage({
   }
 
   const { category, subcategory } = result;
-  const currentPage = Number(searchParams.page) || 1;
+  const currentPage = Number(mySearchParams.page) || 1;
   const postsPerPage = 12;
 
   // Get all posts and filter by category and subcategory
