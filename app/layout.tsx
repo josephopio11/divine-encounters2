@@ -19,12 +19,18 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const baseUrl =
+  process.env.NEXT_PUBLIC_APP_URL || "https://divineencounters.org";
+
+const baseAppName = process.env.NEXT_PUBLIC_APP_NAME || "Divine Encounters";
+
 export const metadata = {
   title: {
-    default: "Divine Encounters",
-    template: "%s | Divine Encounters",
+    default: baseAppName,
+    template: "%s | " + baseAppName,
   },
   description:
+    process.env.NEXT_PUBLIC_APP_DESCRIPTION ||
     "Stories of faith, spirituality, and divine experiences from around the world.",
   keywords: [
     "spirituality",
@@ -35,23 +41,23 @@ export const metadata = {
   ],
   authors: [
     {
-      name: "Divine Encounters",
-      url: "https://divineencounters.org",
+      name: baseAppName,
+      url: baseUrl,
     },
   ],
-  creator: "Divine Encounters",
+  creator: baseAppName,
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://divineencounters.org",
-    title: "Divine Encounters",
+    url: baseUrl,
+    title: baseAppName,
     description:
       "Stories of faith, spirituality, and divine experiences from around the world.",
-    siteName: "Divine Encounters",
+    siteName: baseAppName,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Divine Encounters",
+    title: baseAppName,
     description:
       "Stories of faith, spirituality, and divine experiences from around the world.",
     creator: "@divineencounters",
@@ -61,7 +67,7 @@ export const metadata = {
     shortcut: "/favicon-16x16.png",
     apple: "/apple-touch-icon.png",
   },
-  manifest: "https://divineencounters.org/site.webmanifest",
+  manifest: baseUrl + "/site.webmanifest",
 };
 
 export default function RootLayout({

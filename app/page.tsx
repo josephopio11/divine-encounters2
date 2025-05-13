@@ -4,6 +4,8 @@ import { FeaturedStories } from "@/components/featured-stories";
 import { RecentStories } from "@/components/recent-stories";
 import { getAllCategories } from "@/lib/server/categories-server";
 import { getAllPosts, getFeaturedPosts } from "@/lib/server/posts-server";
+import { Post } from "@/lib/types";
+import { PostTicker } from "@/lib/types-added";
 
 export default async function HomePage() {
   const allPosts = await getAllPosts();
@@ -11,7 +13,7 @@ export default async function HomePage() {
   const categories = await getAllCategories();
 
   // Get posts for each category
-  const categoryPosts = {};
+  const categoryPosts: Post[] = [];
 
   for (const category of categories) {
     const posts = allPosts
@@ -24,9 +26,27 @@ export default async function HomePage() {
     categoryPosts[category.slug] = posts;
   }
 
+  // get unique latest post for each category and return only title, slug and date
+  const uniqueLatestPosts: PostTicker[] = [];
+
+  for (const category of categories) {
+    const latestPost = allPosts.find(
+      (post) =>
+        post.category.toLowerCase().replace(/\s+/g, "-") === category.slug
+    );
+
+    if (latestPost) {
+      uniqueLatestPosts.push({
+        title: latestPost.title,
+        slug: latestPost.slug,
+        date: latestPost.date,
+      });
+    }
+  }
+
   return (
     <main className="container mx-auto px-4 py-6">
-      <BreakingNewsTicker />
+      <BreakingNewsTicker posts={uniqueLatestPosts} />
       {featuredPosts.length > 0 ? (
         <FeaturedStories posts={featuredPosts} />
       ) : (

@@ -7,7 +7,7 @@ keywords:
   ["faith", "guidance", "Psalm 23", "Jesus the Shepherd", "Christian life"]
 ---
 
-# The Shepherd’s Promise
+## The Shepherd’s Promise
 
 In the pages of Scripture, few images are as comforting and enduring as that of the shepherd. It is a metaphor rich with meaning, rooted in the pastoral life of ancient Israel and brought to fulfilment in the person of Jesus Christ. _The Shepherd’s Promise_ is not just a poetic picture; it is a covenant of guidance, protection, and unfailing love that spans the Old and New Testaments. This article reflects on the spiritual power of this promise and what it means for the journey of every believer today.
 
