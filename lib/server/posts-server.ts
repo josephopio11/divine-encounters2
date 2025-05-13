@@ -55,7 +55,7 @@ export async function getAllPosts(): Promise<Post[]> {
     // Start the recursive search from the posts directory
     findMarkdownFiles(postsDirectory);
 
-    console.log(`Found ${allPosts.length} posts in total`);
+    // console.log(`Found ${allPosts.length} posts in total`);
 
     // Sort posts by date (newest first)
     return allPosts.sort(
@@ -160,6 +160,8 @@ function parseMarkdownFile(filePath: string): Post {
         heading: match[1].trim(),
         content: sectionContentHtml,
       });
+
+      // console.log(`Section: ${match[1].trim()}`);
     }
 
     // Create excerpt from content if not provided in frontmatter

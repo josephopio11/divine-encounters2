@@ -1,6 +1,9 @@
 import PostCard from "@/components/post-card";
 import { Button } from "@/components/ui/button";
-import { getCategoryBySlug } from "@/lib/server/categories-server";
+import {
+  getAllCategories,
+  getCategoryBySlug,
+} from "@/lib/server/categories-server";
 import { getPostsByCategory } from "@/lib/server/posts-server";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Metadata } from "next";
@@ -144,3 +147,10 @@ export default async function CategoryPage({
     </main>
   );
 }
+
+export const generateStaticParams = async () => {
+  const categories = await getAllCategories();
+  return categories.map((category) => ({
+    slug: category.slug,
+  }));
+};

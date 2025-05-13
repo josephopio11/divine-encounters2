@@ -1,10 +1,8 @@
 "use client";
 
-import { MegaMenu } from "@/components/mega-menu";
 import { Button } from "@/components/ui/button";
 import type { CategoryData } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
@@ -32,7 +30,8 @@ export function MainNav({ categories }: MainNavProps) {
             key={category.slug}
             className="relative"
             onMouseEnter={() => setActiveCategory(category.slug)}
-            onMouseLeave={() => setActiveCategory(null)}
+            // onMouseLeave={() => setActiveCategory(null)}
+            onMouseDown={() => setActiveCategory(null)}
           >
             <Button
               variant="ghost"
@@ -45,12 +44,12 @@ export function MainNav({ categories }: MainNavProps) {
             >
               <Link href={`/category/${category.slug}`}>
                 {category.name}
-                <ChevronDown className="h-4 w-4" />
+                {/* <ChevronDown className="h-4 w-4" /> */}
               </Link>
             </Button>
-            {activeCategory === category.slug && (
+            {/* {activeCategory === category.slug && (
               <MegaMenu category={category} />
-            )}
+            )} */}
           </div>
         ))}
         {/* <Button variant="ghost" className="px-2" asChild>

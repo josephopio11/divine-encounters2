@@ -72,9 +72,9 @@ export default async function PostPage({
   }
 
   // Add debugging to see what's in the post
-  console.log(`Rendering post: ${post.title}`);
-  console.log(`Content length: ${post.content.length} characters`);
-  console.log(`Number of sections: ${post.sections?.length || 0}`);
+  // console.log(`Rendering post: ${post.title}`);
+  // console.log(`Content length: ${post.content.length} characters`);
+  // console.log(`Number of sections: ${post.sections?.length || 0}`);
 
   const currentPage = Number(mySearchParams.page) || 1;
   const sections = post.sections || [];

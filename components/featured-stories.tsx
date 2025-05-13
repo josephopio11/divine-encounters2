@@ -34,8 +34,8 @@ export function FeaturedStories({ posts }: FeaturedStoriesProps) {
                   "/placeholder.svg?height=600&width=800"
                 }
                 alt={mainFeature.title}
-                width={830}
-                height={830}
+                width={1000}
+                height={1000}
                 className="object-cover transition-all group-hover:scale-105"
                 priority
               />

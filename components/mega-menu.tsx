@@ -12,6 +12,8 @@ interface MegaMenuProps {
 
 export function MegaMenu({ category }: MegaMenuProps) {
   // Use client-side state for featured posts
+  console.log("Rendering mega menu for category:", category.name);
+
   const [featuredPosts, setFeaturedPosts] = useState([
     {
       title: `Featured in ${category.name}: Article Title 1`,
@@ -29,9 +31,12 @@ export function MegaMenu({ category }: MegaMenuProps) {
     },
   ]);
 
+  console.log("Featured posts:", featuredPosts);
+
   return (
-    <div className="absolute left-0 top-full z-50 mt-1 w-screen max-w-screen-xl">
-      <Card className="border shadow-lg">
+    <div className=" left-0 top-full z-50 mt-1 relative">
+      <Card className="border shadow-lg absolute left-0 top-full mt-1 w-screen max-w-screen-xl">
+        What is this
         <CardContent className="grid grid-cols-4 gap-6 p-6">
           <div className="col-span-1">
             <h3 className="mb-4 text-lg font-semibold">{category.name}</h3>

@@ -1,11 +1,10 @@
 "use client";
 
-import type React from "react";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail, MapPin, Phone } from "lucide-react";
+import type React from "react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -24,7 +23,7 @@ export default function ContactPage() {
     setTimeout(() => {
       toast.info("Message sent!", {
         description:
-          "We've received your message and will get back to you soon.",
+          "We&apos;ve received your message and will get back to you soon.",
       });
 
       setName("");
@@ -43,8 +42,8 @@ export default function ContactPage() {
             Contact Us
           </h1>
           <p className="text-xl text-muted-foreground">
-            We'd love to hear from you. Get in touch with the Divine Encounters
-            team.
+            We&apos;d love to hear from you. Get in touch with the Divine
+            Encounters team.
           </p>
         </div>
 

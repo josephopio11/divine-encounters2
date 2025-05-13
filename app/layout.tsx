@@ -82,14 +82,16 @@ export default function RootLayout({
         >
           <div className="relative flex min-h-screen flex-col">
             <SiteHeader />
-            <Suspense>
+            <Suspense fallback={null}>
               <div className="flex-1">{children}</div>
             </Suspense>
             <NewsletterSignup />
             <SiteFooter />
           </div>
           <Toaster richColors />
-          <Analytics />
+          <Suspense fallback={null}>
+            <Analytics />
+          </Suspense>
         </ThemeProvider>{" "}
       </body>
     </html>

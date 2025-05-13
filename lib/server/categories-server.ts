@@ -1,7 +1,7 @@
 "use server";
 
 import { getDefaultCategories } from "@/lib/categories";
-import type { CategoryData } from "@/lib/types";
+import type { CategoryData, SubCategoryData } from "@/lib/types";
 import fs from "fs";
 import path from "path";
 
@@ -39,7 +39,7 @@ export async function getAllCategories(): Promise<CategoryData[]> {
         .join(" ");
 
       // Get subcategories (subfolders within the category folder)
-      let subcategories = [];
+      let subcategories: SubCategoryData[] = [];
       try {
         subcategories = fs
           .readdirSync(categoryPath, { withFileTypes: true })

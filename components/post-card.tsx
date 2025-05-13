@@ -7,10 +7,9 @@ import { Card, CardContent } from "./ui/card";
 
 interface PostItemProps {
   post: Post;
-  flagged?: boolean;
 }
 
-const PostCard = ({ post, flagged }: PostItemProps) => {
+const PostCard = ({ post }: PostItemProps) => {
   return (
     <Card
       key={post.slug}
@@ -21,9 +20,9 @@ const PostCard = ({ post, flagged }: PostItemProps) => {
           <Image
             src={post.featuredImage || "/placeholder.svg?height=300&width=500"}
             alt={post.title}
-            width={350}
-            height={350}
-            className="object-cover transition-all group-hover:scale-105"
+            width={400}
+            height={400}
+            className="object-cover transition-all w-full group-hover:scale-105"
           />
         </div>
         <CardContent className="p-4">
