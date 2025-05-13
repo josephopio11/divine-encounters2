@@ -1,12 +1,9 @@
-import { Badge } from "@/components/ui/badge";
+import PostCard from "@/components/post-card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { getCategoryBySlug } from "@/lib/server/categories-server";
 import { getPostsByCategory } from "@/lib/server/posts-server";
-import { formatDate } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -86,36 +83,7 @@ export default async function CategoryPage({
       {paginatedPosts.length > 0 ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {paginatedPosts.map((post) => (
-            <Card
-              key={post.slug}
-              className="overflow-hidden hover:shadow-2xl hover:shadow-black/20 pt-0 mt-0 transition duration-300 ease-in-out"
-            >
-              <Link href={`/posts/${post.slug}`} className="group mt-0 pt-0">
-                <div className="relative aspect-[16/9] overflow-hidden mt-0 pt-0">
-                  <Image
-                    src={
-                      post.featuredImage ||
-                      "/placeholder.svg?height=300&width=500"
-                    }
-                    alt={post.title}
-                    fill
-                    className="object-cover transition-all group-hover:scale-105"
-                  />
-                </div>
-                <CardContent className="p-4">
-                  <Badge className="mb-2">{post.category}</Badge>
-                  <h2 className="mb-2 line-clamp-2 text-xl font-bold">
-                    {post.title}
-                  </h2>
-                  <p className="mb-2 line-clamp-2 text-sm text-muted-foreground">
-                    {post.excerpt}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {formatDate(post.date)}
-                  </p>
-                </CardContent>
-              </Link>
-            </Card>
+            <PostCard key={post.slug} post={post} />
           ))}
         </div>
       ) : (
